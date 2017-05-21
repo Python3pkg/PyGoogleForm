@@ -23,7 +23,7 @@ try:
     doc.markdown = long_description
 
     long_description = doc.rst
-except ImportError, IOError:
+except ImportError as IOError:
     pass
 
 

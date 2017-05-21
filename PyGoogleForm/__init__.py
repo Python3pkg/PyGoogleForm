@@ -1,1 +1,1 @@
-from FormParser import *
+from .FormParser import *

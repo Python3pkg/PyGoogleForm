@@ -63,7 +63,7 @@ class GFQuestion(object):
 			if not isinstance(answer, collections.Sequence):
 				raise ValueError("answer should be string/unicode or list of strings/unicode")
 			error = None
-			if isinstance(answer, basestring) and answer in answers:
+			if isinstance(answer, str) and answer in answers:
 				self._answer = [answer]
 			elif isinstance(answer, collections.Sequence):
 				self._answer = []
@@ -80,7 +80,7 @@ class GFQuestion(object):
 				errorMessage += '\n\t'.join(answers)
 				raise ValueError(errorMessage)
 		else:
-			if not isinstance(answer, basestring):
+			if not isinstance(answer, str):
 				raise ValueError("answer should be string or unicode")
 			if answers == "" or answer in answers:
 				self._answer = answer
@@ -105,10 +105,10 @@ class GFQuestion(object):
 
 
 def main():
-	import FormParser
+	from . import FormParser
 	url = "https://docs.google.com/forms/d/1jzDkEha066GwSCcSrCg1yaJJLpJAk0_aIFwf6GQgmmU/viewform"
 	gForm = FormParser.GFParser(url)
-	radio = gForm.questions.values()[0]
+	radio = list(gForm.questions.values())[0]
 	# Testing GFQuestion
 	assert radio.getType() == "ss-radio", "Wrong type for radio question: " + radio.getType()
 	assert radio._getChoices() == ["ok", "no", "Other"], "wrong list of answers for radio"
@@ -116,13 +116,13 @@ def main():
 	try:
 		radio.answerQuestion("hello")
 		raise AssertionError('radio.answerQuestion("hello") should have thrown a ValueError')
-	except ValueError, e:
-		print "See the beautiful error message:"
-		print e
+	except ValueError as e:
+		print("See the beautiful error message:")
+		print(e)
 	radio.answerQuestion("ok")
 	assert radio._answer == "ok", 'Error in radio.answerQuestion("ok"), did not save the answer'
 
-	print "All tests successful"
+	print("All tests successful")
 
 
 if __name__ == '__main__':

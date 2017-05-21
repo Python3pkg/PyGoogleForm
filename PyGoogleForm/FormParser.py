@@ -1,8 +1,8 @@
 import collections
-import urllib, urllib2
+import urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse
 from bs4 import BeautifulSoup
 
-from FormQuestion import GFQuestion
+from .FormQuestion import GFQuestion
 
 class GFParser(object):
 	"""Allows to access all the questions from a GForm and submit a response"""
@@ -10,7 +10,7 @@ class GFParser(object):
 	def __init__(self, url):
 		"""Loads form from its public page url"""
 		self.url = url
-		res = urllib2.urlopen(self.url)
+		res = urllib.request.urlopen(self.url)
 		self.soup = BeautifulSoup(res.read(), 'html.parser')
 		if len(self.soup.find_all("h1", "ss-form-title")) == 0:
 			raise ValueError("The url did not correspond to a valid Google Form")
@@ -26,7 +26,7 @@ class GFParser(object):
 
 	def getQuestionIDs(self):
 		"""Returns list of question IDs"""
-		return self.questions.keys()
+		return list(self.questions.keys())
 
 	def getQuestionInfo(self, id):
 		"""Returns the info necessary to answer question as a list
@@ -37,10 +37,10 @@ class GFParser(object):
 
 	def __getitem__(self, id):
 		"""If id is string, same as getQuestionInfo, if int, returns i-th question info"""
-		if isinstance(id, basestring):
+		if isinstance(id, str):
 			return getQuestionInfo(id)
 		elif isinstance(id, int):
-			return getQuestionInfo(self.questions[self.questions.keys()[id]])
+			return getQuestionInfo(self.questions[list(self.questions.keys())[id]])
 		else:
 			raise TypeError("id can only be str (a question id), or int (the index of the question")
 
@@ -51,13 +51,13 @@ class GFParser(object):
 	def submit(self):
 		"""POST current answers to Google Forms"""
 		tups = tuple()
-		for q in self.questions.values():
+		for q in list(self.questions.values()):
 			if q.getAnswerData() is not None:
 				tups += q.getAnswerData()
-		data = urllib.urlencode(tups)
+		data = urllib.parse.urlencode(tups)
 		postURL = self.soup.form["action"]
-		request = urllib2.Request(postURL, data)
-		urllib2.urlopen(request)
+		request = urllib.request.Request(postURL, data)
+		urllib.request.urlopen(request)
 
 
 def main():
@@ -78,8 +78,8 @@ def main():
 			gForm.answerQuestion(question[0], "hello test!")
 	gForm.submit()
 	import datetime
-	print "New answer submitted: " + str(datetime.datetime.now())
-	print "All tests succesful!"
+	print("New answer submitted: " + str(datetime.datetime.now()))
+	print("All tests succesful!")
 
 
 if __name__ == '__main__':
